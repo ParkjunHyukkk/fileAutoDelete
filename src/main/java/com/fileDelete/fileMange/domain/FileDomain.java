@@ -42,24 +42,13 @@ public class FileDomain {
                     searchFiles(file.getAbsolutePath());
                 } else {
                     long lastModified = file.lastModified();
-                    // 파일 수정일 날짜 포맷
-                    SimpleDateFormat simpleDate = new SimpleDateFormat("yyyy-MM-dd");
-                    String formattedLastModified = simpleDate.format(new Date(lastModified));
 
-                    // 기준일 - 수정일 계산
-                    long resultDay = util.getDaysBetween(today.toString(), formattedLastModified);
+                    // 계산식 = 기준일 - 파일수정(생성)일
+                    long resultDay = util.getDaysBetween(today.toString(), util.simpleDataFormat(lastModified));
 
                     if (resultDay >= baseDay) { // 30일
                         if (file.delete()) {
                             logger.info("파일 삭제 : " + file.getAbsolutePath());
-                            File parentDir = file.getParentFile();
-                            if (parentDir != null && parentDir.isDirectory() && parentDir.list().length == 0) {
-                                if (parentDir.delete()) {
-                                    logger.debug("빈 디렉토리 삭제 : ", parentDir.getAbsolutePath());
-                                } else {
-                                    logger.debug("빈 디렉토리 삭제 실패 : ", parentDir.getAbsolutePath());
-                                }
-                            }
                         } else {
                             logger.info("파일 삭제 실패 : " + file.getAbsolutePath());
                         }
